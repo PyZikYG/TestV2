@@ -1,0 +1,189 @@
+@model ICollection<Answer>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var testResult = Model.FirstOrDefault().TestResult;
+    var target_date = testResult.StartedOn.AddMinutes(testResult.Test.TimeToPassing);
+}
+<fieldset id="field">
+    @if (testResult.Test.TimeToPassing != 0)
+    {
+        <div class="container">
+            <span class="aside" style="font-size:.8em">
+                <em>Старт: @Model.FirstOrDefault().TestResult.StartedOn.ToString(),</em>
+                <em>Финиш: @target_date.ToString(),</em>
+                <em id="timer">До финиша: </em>
+            </span>
+        </div>
+    }
+
+    <div id="formDiv" class="container">
+
+
+    </div>
+</fieldset>
+<nav class="table-responsive container" aria-label="...">
+    <ul class="pagination">
+        <li class="page-item disabled prev-btn">
+            <span class="page-link unselectable">Пред</span>
+        </li>
+        @foreach (var a in Model)
+        {
+            <li class="page-item num-btn" btn-order="@a.Order" btn-id="@a.Id" answer-type="@a.AnswerType">
+                <a class="page-link unselectable">@a.Order</a>
+            </li>
+        }
+        <li class="page-item next-btn">
+            <span class="page-link unselectable">След</span>
+        </li>
+    </ul>
+</nav>
+<button class="btn btn-default" style="margin-left: 15px" data-toggle="modal" onclick='submitAnswer();' data-target="#finishModal">Завершить</button>
+
+<div class="modal fade" id="finishModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Завершить?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены что вы хотите завершить тест?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick='$("#finishForm").submit();'>Да</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form hidden="hidden" id="finishForm" asp-controller="Test" asp-action="FinishTest"
+      asp-route-testResultId="@Model.First().TestResult.Id"></form>
+@section Scripts
+    {
+    @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
+    <script src="~/lib/Sortable/Sortable.js"></script>
+    <script type="text/javascript">
+        var date = new Date();
+        var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");
+        var lastOrder = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-order");
+
+        var id = @ViewContext.RouteData.Values["answerId"];
+        $("li[btn-id=" + id + "]").addClass("active");
+
+        var activeOrder = getActiveAnswerOrder();
+
+        if (activeOrder == firstOrder)
+            $(".prev-btn").addClass("disabled");
+        else
+            $(".prev-btn").removeClass("disabled");
+        if (activeOrder == lastOrder)
+            $(".next-btn").addClass("disabled");
+        else
+            $(".next-btn").removeClass("disabled");
+
+        loadAnswer();
+
+        $("nav ul").on("click", function (e) {
+            if (!(target_date - Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                            date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()) > 0 || @testResult.Test.TimeToPassing == 0)) {
+                switchAnswer(e);
+            }
+            else {
+                submitSwitchAnswer(e);
+            }
+            loadAnswer();
+        });
+
+        $(document).keydown(disableArrowKeys);
+
+        document.onkeyup =
+            function (e) {
+                if ($("textarea[id=Text]").is(':focus'))
+                    return;
+                if (e.keyCode == 37) {
+                    if (!$(".prev-btn").hasClass("disabled")) {
+                        if (target_date - Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                            date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()) > 0 || @testResult.Test.TimeToPassing == 0) {
+                            submitAnswer();
+                        }
+                        var tmp = getActiveAnswerOrder() - 1;
+                        $(".active").removeClass("active");
+                        $("li[btn-order=" + tmp + "]").addClass("active");
+                        var activeOrder = getActiveAnswerOrder();
+                        if (activeOrder == firstOrder)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (activeOrder == lastOrder)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                        loadAnswer();
+                    }
+                }
+                else if (e.keyCode == 39) {
+                    if (!$(".next-btn").hasClass("disabled")) {
+                        if (target_date - Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                            date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()) > 0 || @testResult.Test.TimeToPassing == 0) {
+                            submitAnswer();
+                        }
+                        var tmp = getActiveAnswerOrder() - -1;
+                        $(".active").removeClass("active");
+                        $("li[btn-order=" + tmp + "]").addClass("active");
+                        var activeOrder = getActiveAnswerOrder();
+                        if (activeOrder == firstOrder)
+                            $(".prev-btn").addClass("disabled");
+                        else
+                            $(".prev-btn").removeClass("disabled");
+                        if (activeOrder == lastOrder)
+                            $(".next-btn").addClass("disabled");
+                        else
+                            $(".next-btn").removeClass("disabled");
+                        loadAnswer();
+                    }
+                }
+            };
+        var target_date = Date.UTC(@target_date.Year, @target_date.Month - 1, @target_date.Day, @target_date.Hour, @target_date.Minute, @target_date.Second, @target_date.Millisecond);
+        var days, hours, minutes, seconds; // переменные для единиц времени
+        var seconds_left;
+        if (@testResult.Test.TimeToPassing != 0)
+        {
+            getCountdown();
+            var timer = setInterval(function() { getCountdown(); }, 1000);
+            function getCountdown()
+            {
+                date = new Date();
+                var current_date = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                    date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+                seconds_left = (target_date - current_date) / 1000;
+                if (seconds_left >= 0) {
+
+                    days = pad(parseInt(seconds_left / 86400));
+                    seconds_left = seconds_left % 86400;
+
+                    hours = pad(parseInt(seconds_left / 3600));
+                    seconds_left = seconds_left % 3600;
+
+                    minutes = pad(parseInt(seconds_left / 60));
+                    seconds = pad(parseInt(seconds_left % 60));
+
+                    $("#timer").html("До финиша: " + days + " " + hours + ":" + minutes + ":" + seconds);
+                }
+                else {
+                    $("#timer").html("До финиша: 00 00:00:00");
+                    clearInterval(timer);
+                    $("#field").attr("disabled", "");
+                }
+            }
+            function pad(n)
+            {
+                return (n < 10 ? '0' : '') + n;
+            }
+        }
+    </script>
+
+}

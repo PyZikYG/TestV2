@@ -1,0 +1,87 @@
+﻿@model SingleChoiceAnswer
+@{
+    var Question = Model.Question as SingleChoiceQuestion;
+}
+<form method="post">
+    <div>
+        <b>Текст вопроса:</b>
+        <div>
+            <div class="form-group clearfix contentwrapper">
+                <div class="form-control unselectable" style="height: auto" readonly>@Model.Question.Title</div>
+            </div>
+        </div>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
+    </div>
+    <input type="hidden" value="@Model.Id">
+    <fieldset class="form-group row" id="options">
+        <div class="items card" style="margin-bottom: 0;">
+            <table class="table table-borderless" style="margin-bottom: 0;">
+                <tbody id="item-table__body">
+                @foreach (var option in Model.Question.Options)
+                {
+                    if (Model.Option != null)
+                    {
+                        if (Model.TestResult.IsCompleted)
+                        {
+                                if (Model.Option.Id == option.Id)
+                                {
+                                    <tr class="item-table__row @(!Model.TestResult.Test.HideRightAnswers ? Question.RightAnswer == option ?
+                                                                      "bg-success text-white" :
+                                                                        "bg-danger text-white" : "")">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label unselectable">
+                                                <input name="option" type="radio" option-id="@option.Id"
+                                                       group="Options" checked>
+                                                @option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr class="item-table__row @(Question.RightAnswer == option
+                                                                 && !Model.TestResult.Test.HideRightAnswers
+                                                                     ? "bg-success text-white"
+                                                                     : "")">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label unselectable">
+                                                <input name="option" type="radio" option-id="@option.Id"
+                                                       group="Options">
+                                                @option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                        }
+                        else
+                        {
+                            <tr class="item-table__row">
+                                <td class="item-table__cell">
+                                    <label id="inputContainer" class="form-check-label unselectable">
+                                        <input name="option" type="radio" option-id="@option.Id" group="Options" @(Model.Option.Id == option.Id ? "checked" : "")>
+                                        @option.Text
+                                    </label>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr class="item-table__row">
+                            <td class="item-table__cell">
+                                <label class="form-check-label unselectable">
+                                    <input name="option" type="radio" option-id="@option.Id" group="options">
+                                    @option.Text
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</form>

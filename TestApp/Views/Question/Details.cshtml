@@ -1,0 +1,41 @@
+﻿@model TestApp.Models.Question
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+
+}
+<b>Текст вопроса:</b>
+<div>
+    <div class="form-group clearfix contentwrapper">
+        <div class="form-control" style="height: auto" readonly>@Model.Title</div>
+    </div>
+</div>
+<b>Тип вопроса:</b>
+<div>
+    <div class="form-group clearfix contentwrapper">
+        <div class="form-control" style="height: auto" readonly>@Enum.Parse(typeof(Question.QuestionTypeEnum), Model.QuestionType)</div>
+    </div>
+</div>
+<b>Варианты ответа:</b>
+<div class="card" style="background-color: #e9ecef">
+    <table class="table table-hover table-borderless">
+        <thead>
+            <tr>
+                <th scope="col" style="width:10%">#</th>
+                <th scope="col" style="width:auto">Текст</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int i = 1; }
+            @foreach (var o in Model.Options)
+            {
+
+                <tr class="@((o.IsRight) ? "table-success" : "")">
+                    <td style="width:10%">@(i++)</td>
+                    <td style="white-space: pre-line; width: auto">@o.Text</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+    </div>

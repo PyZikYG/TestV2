@@ -1,0 +1,69 @@
+﻿@model TestResultsModel
+@{
+    ViewBag.Title = Model.Test.Name;
+    Layout = "_Layout";
+}
+
+<h4 class="text-center"  style="padding-top:1rem">@ViewBag.Title</h4>
+<hr />
+@if (Model.Results.Count == 0 || Model.Results == null)
+{
+    <div class="alert alert-warning" role="alert">
+        Тест пока ещё никто не прошёл
+    </div>
+}
+else
+{
+    <a class="btn btn-primary center" href="@Url.Action("Stats","Test")">Статистика</a>
+    <hr/>
+    <form asp-controller="Test" asp-action="Results" method="get">
+            <div class="form-actions no-color">
+                <p>
+                    ID пользователя: <input class="form-control" style="width:auto; display:inline" type="number" name="searchId" value="@ViewData["searchId"]" />
+                    <input type="submit" value="Search" class="btn btn-default" />
+                </p>
+            </div>
+    </form>
+    <dt>
+        @Html.DisplayNameFor(model => model)
+    </dt>
+    <dd style="margin-top:1rem;">
+        <table class="table item-table" id="results">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Дата</th>
+                <th>Результат</th>
+                <th>ID прохождения</th>
+            </tr>
+            @foreach (var item in Model.Results)
+            {
+               
+                    <tr>
+                        <td>
+                            @item.CompletedByUserId
+                        </td>
+                        <td>
+                            @item.CompletedByUser.UserName
+                        </td>
+                        <td>
+                            @item.CompletedOn
+                        </td>
+                        <td>
+                            @(item.RightAnswersCount * 100 / item.TotalQuestions)%
+                        </td>
+                        <td>
+                            <form method="post">
+                                <a style="padding-right: .8em;">@item.Id</a> |
+                                <a style="padding-right: .8em; padding-left: .8em" href="@Url.Action("AnswerResults", "Answer", new { testResultId = item.Id, answerId = item.Answers.SingleOrDefault(a => a.Order == 1).Id })">
+                                    Ответы пользователя
+                                </a> | <input asp-controller="Test" asp-action="ReAdd"
+                                asp-route-testResultId="@item.Id" value="Переназначить" class="btn-link" type="submit" />
+                            </form>
+                        </td>
+                    </tr>
+                
+            }
+        </table>
+    </dd>
+}

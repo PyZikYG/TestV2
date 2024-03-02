@@ -1,0 +1,165 @@
+@using System.Security.AccessControl
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<User> UserManager;
+
+@model ICollection<TestResult>
+@{
+    ViewBag.Title = "Тесты";
+    Layout = "_Layout";
+
+    var completedTests = new List<TestResult>();
+    var nonCompletedTests = new List<TestResult>();
+    if (Model != null)
+    {
+        foreach (var test in Model)
+        {
+
+            if (test.IsCompleted)
+            {
+                completedTests.Add(test);
+            }
+            else if (test.Test.IsEnabled)
+            {
+                nonCompletedTests.Add(test);
+            }
+        }
+    }
+}
+<h4 class="text-center" style="padding-top:1rem">@ViewBag.Title</h4>
+<form id="addByIdForm" method="post" class="form" role="form">
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group row">
+        <label for="testId" class="col-1 col-form-label">ID</label>
+        <div class="col-2">
+            <input class="form-control" id="testId" name="testId" type="number" min="1" />
+        </div>
+        <input id="userId" name="userId" type="hidden" value="@UserManager.GetUserId(Context.User)" />
+        <button type="submit" class="btn btn-info">Добавить тест по ID</button>
+    </div>
+    <hr />
+</form>
+
+@if (nonCompletedTests.Count == 0)
+{
+    <div class="alert alert-warning" role="alert">
+        Не найдено непройденных тестов
+    </div>
+}
+else
+{
+    <h5 class="text-center" style="margin-bottom: 1rem">Текущие тесты</h5>
+    <dd>
+        <table class="table item-table">
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Создатель</th>
+            </tr>
+            @foreach (var item in nonCompletedTests)
+            {
+                <tr>
+                    <td>
+                        @item.Test.Id
+                    </td>
+                    <td>
+                        <a asp-controller="Test" asp-action="Start" asp-route-testResultId="@item.Id">@item.Test.Name</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Test.CreatedBy.UserName)
+                    </td>
+                </tr>
+            }
+        </table>
+    </dd>
+}
+<hr />
+@if (completedTests.Count == 0)
+{
+    <div class="alert alert-warning" role="alert">
+        Вы не прошли ни одного теста
+    </div>
+}
+else
+{
+    <h5 class="text-center" style="margin-bottom: 1rem">Завершённые тесты</h5>
+    <dd>
+        <table class="table item-table">
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Создатель</th>
+                <th>Пройден</th>
+                <th>Процент выполнения</th>
+            </tr>
+            @foreach (var item in completedTests)
+            {
+                <tr>
+                    <td>
+                        @item.Test.Id
+                    </td>
+                    <td>
+                        <a asp-controller="Test" asp-action="TestResultDetails" asp-route-testResultId="@item.Id">@item.Test.Name</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Test.CreatedBy.UserName)
+                    </td>
+                    <td>
+                        @item.CompletedOn
+                    </td>
+                    <td>
+                        @(item.RightAnswersCount * 100 / item.TotalQuestions)%
+                    </td>
+                </tr>
+            }
+        </table>
+    </dd>
+}
+
+<!-- Error Modal -->
+<div id="errorModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Ошибка</h4>
+            </div>
+            <div class="modal-body">
+                <p id="modalErrorText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Success Modal -->
+<div id="successModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Успешно</h4>
+            </div>
+            <div class="modal-body">
+                <p id="modalSuccessText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+
+    </script>
+}

@@ -1,0 +1,165 @@
+test {
+	text = "Основы программирования и алгоритмизации"
+	flag = true
+	shuffle = false
+	hide = false
+	count = 5
+	time = 120
+	question {
+		type = single
+		text = "Инкапсуляция – это"
+		score = 1
+		option {
+			text = "Свойство системы, позволяющее описать новый класс на основе уже существующего с частично или полностью заимствующейся функциональностью."
+			flag = false
+		}
+		option {
+			text = "Сущность в адресном пространстве вычислительной системы, появляющаяся при создании экземпляра класса или копирования прототипа (например, после запуска результатов компиляции и связывания исходного кода на выполнение)"
+			flag = false
+		}
+		option {
+			text = "Свойство системы, позволяющее объединить данные и методы, работающие с ними в классе, и скрыть детали реализации от пользователя."
+			flag = true
+		}
+	}
+	question {
+		type = multi
+		text = "Основные принципы ООП"
+		score = 2
+		option {
+			text = "Абстрагирование"
+			flag = true
+		}
+		option {
+			text = "Инкапсуляция"
+			flag = true
+		}
+		option {
+			text = "Наследование"
+			flag = true
+		}
+		option {
+			text = "Полиморфизм"
+			flag = true
+		}
+		option {
+			text = "Типизирование"
+			flag = false
+		}
+	}
+	question {
+		type = multi
+		text = "Основные принципы ООП"
+		score = 2
+		option {
+			text = "Абстрагирование"
+			flag = true
+		}
+		option {
+			text = "Инкапсуляция"
+			flag = true
+		}
+		option {
+			text = "Наследование"
+			flag = true
+		}
+		option {
+			text = "Полиморфизм"
+			flag = true
+		}
+		option {
+			text = "Типизирование"
+			flag = false
+		}
+	}
+	question {
+		type = single
+		text = "Какого свойства нет среди свойств алгоритмов?"
+		score = 2
+		option {
+			text = "Дискретность"
+			flag = false
+		}
+		option {
+			text = "Конечность"
+			flag = false
+		}
+		option {
+			text = "Определенность"
+			flag = false
+		}
+		option {
+			text = "Разделимость"
+			flag = true
+		}
+	}
+	question {
+		type = single
+		text = "Какая структура не относится к линейным?"
+		score = 1
+		option {
+			text = "Связный список"
+			flag = false
+		}
+		option {
+			text = "Очередь"
+			flag = false
+		}
+		option {
+			text = "Граф"
+			flag = true
+		}
+		option {
+			text = "Стек"
+			flag = false
+		}
+	}
+	question {
+		type = single
+		text = "Какое условие должно выполняться для того, чтобы в массиве размерности N можно было выполнить двоичный поиск?"
+		score = 3
+		option {
+			text = "N должно быть четным"
+			flag = false
+		}
+		option {
+			text = "N должно быть нечетным"
+			flag = false
+		}
+		option {
+			text = "Массив не должен содержать отрицательных элементов"
+			flag = false
+		}
+		option {
+			text = "Массив должен быть отсортирован"
+			flag = true
+		}
+	}
+	question {
+		type = multi
+		text = "Какие методы существуют в разработке алгоритмов?"
+		score = 1
+		option {
+			text = "Разделяй и властвуй"
+			flag = true
+		}
+		option {
+			text = "Итеративный"
+			flag = true
+		}
+		option {
+			text = "Индукционный"
+			flag = false
+		}
+		option {
+			text = "Бинарный"
+			flag = false
+		}
+		option {
+			text = "Динамический"
+			flag = true
+		}
+	}
+
+	
+}

@@ -1,0 +1,226 @@
+@using System;
+@model AddTestModel
+
+@{
+    ViewBag.Title = "Ваши тесты";
+    Layout = "_Layout";
+}
+
+<h4 class="text-center" style="padding-top:1rem">@ViewBag.Title</h4>
+@if (Model.Model1 == null || Model.Model1.Count == 0)
+{
+    <hr/>
+    <div class="alert alert-warning" role="alert">
+        Вы пока ещё не создали тестов
+    </div>
+    <hr/>
+}
+else
+{
+    <dt>
+        @Html.DisplayNameFor(model => model)
+    </dt>
+    <dd style="margin-top: 1rem;">
+        <table class="table item-table">
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th style="text-align: center;">Флаги</th>
+                @*<th>Перемешивать</th>
+                <th>Ответы</th>
+                <th>Создатель</th>*@
+                <th>Управление</th>
+            </tr>
+            @foreach (var item in Model.Model1)
+            {
+                <tr>
+                    <td>
+                        @item.Id
+                    </td>
+                    <td class="col-4">
+                        <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+                    </td>
+                    <td style="text-align: center;">
+                        <form method="post">
+
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Enable"
+                                    asp-route-testId="@item.Id" type="submit"
+                                    data-toggle="tooltip" data-placement="top" title="Включен?">
+                                <span style="width: 5em" class="badge badge-@(item.IsEnabled ? "success" : "danger")">ON</span>
+                            </button>
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Shuffle"
+                                    asp-route-testId="@item.Id" type="submit"
+                                    data-toggle="tooltip" data-placement="top" title="Перемешать?">
+                                <span style="width: 5em" class="badge badge-@(item.Shuffled ? "success" : "danger")">RNG</span>
+                            </button>
+
+
+                            <button style="width: 5em" asp-controller="Test" class="btn-link" asp-action="Hide"
+                                    asp-route-testId="@item.Id" type="submit"
+                                    data-toggle="tooltip" data-placement="top" title="Показывать правильные ответы?">
+                                <span style="width: 5em" class="badge badge-@(!item.HideRightAnswers ? "success" : "danger")">SHOW</span>
+                            </button>
+
+
+                        </form>
+                    </td>
+                    @*<td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                </td>*@
+                <td>
+                    <form method="post">
+                        <a asp-controller="Test" asp-action="Count" asp-route-testId="@item.Id" style="padding-right: .8em" data-toggle="tooltip" data-placement="top" title="Вопросов при прохождении (только при RNG, 0 - все), время на прохождение (0 - без ограничений)">@item.Count / @item.TimeToPassing</a> |
+                        <a asp-controller="Test" asp-action="Results"
+                           asp-route-id="@item.Id" style="padding-right: .8em; padding-left: .8em">Результаты</a> |
+                        <input asp-controller="Test" asp-action="Delete"
+                               asp-route-testId="@item.Id" value="Удалить" class="btn-link" type="submit" id="deleteLink" />
+                    </form>
+                </td>
+            </tr>
+            }
+        </table>
+    </dd>
+}
+
+<a asp-controller="Test" asp-action="Add" method="get">@*<button class="btn btn-info">Добавить тест</button>*@</a>
+<button class="btn btn-info"
+        data-toggle="collapse" data-target="#addFormCollapse"
+        aria-expanded="false" aria-controls="addFormCollapse">
+    Добавить тест
+</button>
+<button class="btn btn-info"
+        data-toggle="collapse" data-target="#addFromFileFormCollapse"
+        aria-expanded="false" aria-controls="addFromFileFormCollapse">
+    Добавить тест из файла
+</button>
+<div class="panel panel-default" id="parent">
+    <div class="panel-heading">
+        <div class="collapse multi-collapse" data-parent="#parent" id="addFromFileFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" enctype="multipart/form-data" asp-action="AddFromFile" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <div class="form-group">
+                        <div class="form-control-file col-md-10">
+                            <div id="example">
+                                <div class="card">
+                                    <div id="exampleHeading">
+                                        <h5 class="mb-0">
+                                            <button class="btn btn-link collapse-btn" type="button" data-toggle="collapse" data-target="#exampleCollapse" aria-expanded="true" aria-controls="exampleCollapse">
+                                                Пример
+                                            </button>
+                                        </h5>
+                                    </div>
+
+                                    <div id="exampleCollapse" class="collapse" aria-labelledby="exampleHeading" data-parent="#example">
+                                        <div class="card-body">
+                                            <pre>test {
+	text = Название теста
+	[flag = Состояние (true/false)] = false
+	[shuffled = Перемешивать (true/false)] = flase
+	[count = Вопросов при прохождении] = 0
+	[time = Время на прохождение] = 0
+	question {
+		type = Тип вопроса (single/multi/text/dnd/code)
+		text = Текст вопроса
+		[score = Баллов за правильный ответ] = 1
+		option {
+			text = Текст варианта ответа
+			[flag = Состояние (true/false)] = false *
+		} **
+		code {
+			text = Код
+			args = Аргументы
+			output = Вывод
+		} ***
+	}
+}
+* - Только для single и multi
+** - Для single, multi, text, dnd
+*** - Для code</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                                </div>
+                                <div class="custom-file" style="cursor: pointer">
+                                    <input type="file" onchange="$('#inputFile01').html(this.files[0].name)" id="inputFile00" class="custom-file-input" name="uploadedFile">
+                                    <label class="custom-file-label" id="inputFile01" for="inputFile00">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" value="Upload" class="btn btn-primary">Загрузить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="panel-heading">
+        <div class="collapse multi-collapse" data-parent="#parent" id="addFormCollapse">
+            <div class="card card-body">
+                <form asp-controller="Test" asp-action="Add" asp-route-returnurl="/User/Tests/" method="post" class="form" role="form">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Name" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Name" class="form-control" />
+                            <span asp-validation-for="Model2.Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Count" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Count" class="form-control" />
+                            <span asp-validation-for="Model2.Count" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Time" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Time" class="form-control" />
+                            <span asp-validation-for="Model2.Time" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.IsEnabled" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.IsEnabled" type="checkbox" class="checkbox" />
+                            <span asp-validation-for="Model2.IsEnabled" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.Shuffled" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.Shuffled" type="checkbox" class="checkbox" />
+                            <span asp-validation-for="Model2.Shuffled" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="Model2.HideRightAnswers" class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+                            <input asp-for="Model2.HideRightAnswers" type="checkbox" class="checkbox" />
+                            <span asp-validation-for="Model2.HideRightAnswers" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    
+}

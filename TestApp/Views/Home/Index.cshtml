@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNetCore.Identity
+@{
+    ViewData["Title"] = "Главная страница";
+}
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<div class="container">
+    <div class="align-content-center">
+
+        @if (!SignInManager.IsSignedIn(User))
+        {
+            <hr/>
+            <h2 class="text-center">Здравствуйте, для начала <a href="@Url.Action("Register", "User")">зарегестрируйтесь</a> или <a href="@Url.Action("Login", "User")">войдите</a></h2>
+        }
+        else
+        {
+            <hr/>
+            <h2 class="text-center">Здравствуйте, @UserManager.GetUserName(User)!</h2>
+
+        }
+        <p></p>
+        <p class="text-center">Для прохождения тестов и просмотра ваших результатов нажмите
+            <a href="@Url.Action("TestResults", "Test")">прохождение тестов</a> сверху.
+            Для создания и редактирования тестов нажмите
+            <a href="@Url.Action("Tests", "Test")">создание тестов</a>.</p>
+        <h4 class="text-center">Как пользоваться?</h4>
+        <div class="accordion" id="instruction">
+
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" style="width: 100%; text-align: left;" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            Прохождение тестов
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne">
+                    <div class="card-body">
+                        Для того, чтобы пройти тест, выберите его из списка доступных, либо добавьте по QR-коду или с помощью специальной формы на <a href="@Url.Action("TestResults", "Test")">странице со списком тестов</a>.
+                        Для переключения между вопросами используйте клавиши <kbd>&larr;</kbd> и <kbd>&rarr;</kbd>.
+                        Для завершения теста нажмите кнопку "Завершить"
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" id="heading2">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" style="width: 100%; text-align: left;" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                            Создание тестов
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapse2" class="collapse" aria-labelledby="heading2">
+                    <div class="card-body">
+                        <p>
+                            Перейдите на страницу <a href="@Url.Action("Tests", "Test")">создания тестов</a>. Создайте новый тест или добавьте его из файла. После создания теста добавьте вопросы. Доступны следующие типы вопросов:
+                        </p>
+                        <ul>
+                            <li>С одним правильным ответом</li>
+                            <li>С несколькими правильнымм ответами</li>
+                            <li>На ввод ответа</li>
+                            <li>На восстановление правильной последовательности</li>
+                            <li>На написание кода</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

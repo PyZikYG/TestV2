@@ -1,0 +1,118 @@
+﻿@model MultiChoiceAnswer
+@{
+    List<int> checkedOptionIds = ViewBag.checkedOptionIds;
+    List<int> rightOptionIds = ViewBag.rightOptionIds;
+    var Quesion = Model.Question as MultiChoiceQuestion;
+}
+
+<form method="post">
+    <div>
+        <b>Текст вопроса:</b>
+        <div>
+            <div class="form-group clearfix contentwrapper">
+                <div class="form-control unselectable" style="height: auto" readonly>@Model.Question.Title</div>
+            </div>
+        </div>
+        @if (Model.TestResult.IsCompleted)
+        {
+            <h5>Балл: @Model.Score/@Model.Question.Score</h5>
+        }
+    </div>
+    <input type="hidden" value="@Model.Id">
+    <fieldset class="form-group row" id="options">
+        <div class="items card" style="margin-bottom: 0;">
+            <table class="table table-borderless" style="margin-bottom: 0;">
+                <tbody id="item-table__body">
+                    @if (Model.AnswerOptions.Count != 0)
+                    {
+                        foreach (var option in Model.AnswerOptions)
+                        {
+                            if (Model.TestResult.IsCompleted)
+                            {
+                                if (option.Checked == option.Option.IsRight)
+                                {
+                                    <tr class="item-table__row @(!Model.TestResult.Test.HideRightAnswers && option.Checked ?"bg-success text-white" : "")">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label unselectable">
+                                                <input name="option" type="checkbox" option-id="@option.OptionId"
+                                                       group="Options" @(option.Checked ? "checked" : "")>
+                                                @option.Option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr class="item-table__row @(option.Checked
+                                                                  ? "bg-danger text-white"
+                                                                  : (Model.TestResult.Test.HideRightAnswers ? "" :"bg-warning text-white"))">
+                                        <td class="item-table__cell">
+                                            <label id="inputContainer" class="form-check-label unselectable">
+                                                <input name="option" type="checkbox" option-id="@option.OptionId"
+                                                       group="Options" @(option.Checked ? "checked" : "")>
+                                                @option.Option.Text
+                                            </label>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="item-table__row">
+                                    <td class="item-table__cell">
+                                        <label class="form-check-label unselectable">
+                                            <input name="option" type="checkbox" @(option.Checked ? "checked" : "") option-id="@option.Option.Id" group="Options">
+                                            @option.Option.Text
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var option in Model.Question.Options)
+                        {
+                            <tr class="item-table__row">
+                                <td class="item-table__cell">
+                                    <label class="form-check-label unselectable">
+                                        <input name="option" type="checkbox" option-id="@option.Id" group="Options">
+                                        @option.Text
+                                    </label>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+
+                    @{
+                        /*
+                            if (Model.AnswerOptions.Count !=0)
+                            {
+                                <tr class="item-table__row">
+                                    <td class="item-table__cell">
+                                        <label class="form-check-label">
+                                            <input name="option" type="checkbox" @(checkedOptionsIds.Contains(option.Id)?"checked":"") option-id="@option.Id" group="Options">
+                                            @option.Text
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr class="item-table__row">
+                                    <td class="item-table__cell">
+                                        <label class="form-check-label">
+                                            <input name="option" type="checkbox"  option-id="@option.Id" group="options">
+                                            @option.Text
+                                        </label>
+                                    </td>
+                                </tr>
+                            }
+                            */
+                    }
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</form>
