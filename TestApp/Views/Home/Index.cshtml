@@ -20,10 +20,16 @@
 
         }
         <p></p>
-        <p class="text-center">Для прохождения тестов и просмотра ваших результатов нажмите
+        <p class="text-center">
+            Для прохождения тестов и просмотра ваших результатов нажмите
             <a href="@Url.Action("TestResults", "Test")">прохождение тестов</a> сверху.
             Для создания и редактирования тестов нажмите
-            <a href="@Url.Action("Tests", "Test")">создание тестов</a>.</p>
+            @if (UserManager.GetUserName(User) == "Admin")
+            {
+                <a href="@Url.Action("Tests", "Test")">создание тестов</a>
+            }
+
+        </p>
         <h4 class="text-center">Как пользоваться?</h4>
         <div class="accordion" id="instruction">
 
@@ -47,9 +53,12 @@
             <div class="card">
                 <div class="card-header" id="heading2">
                     <h2 class="mb-0">
-                        <button class="btn btn-link" style="width: 100%; text-align: left;" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                            Создание тестов
-                        </button>
+                        @if (UserManager.GetUserName(User) == "Admin")
+                        {
+                            <button class="btn btn-link" style="width: 100%; text-align: left;" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                Создание тестов
+                            </button>
+                        }
                     </h2>
                 </div>
                 <div id="collapse2" class="collapse" aria-labelledby="heading2">

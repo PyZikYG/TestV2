@@ -18,6 +18,13 @@ namespace TestApp.Controllers
             return View();
         }
 
+        public IActionResult Members()
+        {
+            ViewData["Message"] = "Members page";
+
+            return View();
+        }
+
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";

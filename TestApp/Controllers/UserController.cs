@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestApp.Models;
 using TestApp.Models.UserViewModels;
@@ -32,10 +33,10 @@ namespace TestApp.Controllers
         }
 
         // GET
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            return
-                View();
+            var users = await _userManager.GetUserAsync(HttpContext.User); 
+            return View(users); 
         }
 
         [Route("/Login/")]
@@ -110,7 +111,7 @@ namespace TestApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = new User {UserName = model.Email, Email = model.Email};
+                var user = new User {UserName = model.UserName, Email = model.Email};
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

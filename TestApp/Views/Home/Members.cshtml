@@ -1,0 +1,34 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Список пользователей";
+    var users = await UserManager.Users.ToListAsync();
+}
+
+<div class="container">
+    <div class="align-content-center">
+        <h2 class="text-center">Список пользователей</h2>
+        <hr />
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Имя пользователя</th>
+                    <th>Email</th>
+                    <th>Id</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.Id</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -36,9 +36,15 @@
                             <a class="nav-link"
                                asp-area="" asp-controller="Test" asp-action="TestResults">Прохождение тестов</a>
                         </li>
-                        <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
-                            <a class="nav-link" asp-controller="Test" asp-action="Tests">Создание тестов</a>
-                        </li>
+                        @if (UserManager.GetUserName(User) == "Admin")
+                        {
+                            <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Tests" ? "active" : "")">
+                                <a class="nav-link" asp-controller="Test" asp-action="Tests">Создание тестов</a>
+                            </li>
+                            <li class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Members" ? "active" : "")">
+                                <a class="nav-link" asp-controller="Home" asp-action="Members">Пользователи</a>
+                            </li>
+                        }
                     }
                 </ul>
             </div>
@@ -50,9 +56,6 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; 2024 - pz</p>
-        </footer>
     </div>
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>

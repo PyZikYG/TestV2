@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>WebApplication3</ActiveDebugProfile>
+    <ActiveDebugProfile>TestApp</ActiveDebugProfile>
   </PropertyGroup>
 </Project>
