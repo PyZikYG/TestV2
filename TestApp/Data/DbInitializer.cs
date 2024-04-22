@@ -54,7 +54,7 @@ namespace TestApp.Data
         {
             var users = new[]
             {
-                new User {UserName = "user1@example.com", Email = "user1@example.com"},
+                new User {UserName = "Admin", Email = "user1@example.com"},
                 new User {UserName = "user2@example.com", Email = "user2@example.com"}
             };
 

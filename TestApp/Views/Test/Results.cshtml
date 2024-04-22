@@ -57,8 +57,8 @@ else
                                 <a style="padding-right: .8em;">@item.Id</a> |
                                 <a style="padding-right: .8em; padding-left: .8em" href="@Url.Action("AnswerResults", "Answer", new { testResultId = item.Id, answerId = item.Answers.SingleOrDefault(a => a.Order == 1).Id })">
                                     Ответы пользователя
-                                </a> | <input asp-controller="Test" asp-action="ReAdd"
-                                asp-route-testResultId="@item.Id" value="Переназначить" class="btn-link" type="submit" />
+@*                                 </a> | <input asp-controller="Test" asp-action="ReAdd"
+                                asp-route-testResultId="@item.Id" value="Переназначить" class="btn-link" type="submit" /> *@
                             </form>
                         </td>
                     </tr>

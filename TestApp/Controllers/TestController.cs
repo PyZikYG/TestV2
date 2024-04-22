@@ -704,6 +704,29 @@ namespace TestApp.Controllers
                 new { testResultId = testResult.Id, answerId = answers.SingleOrDefault(a => a.Order == 1).Id });
         }
 
+        [Authorize]
+        [HttpGet("/Test/Result/{testResultId}/GetScore/")]
+        public async Task<IActionResult> GetScore(int TestResultId, [FromQuery] int questionId, [FromQuery] int selected)
+        {
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var correctAnswer = _context.Options.Where(x => x.QuestionId.Equals(questionId)).Where(z => z.IsRight.Equals(true));
+            float score = 0;
+            if (correctAnswer.Count() > 0)
+            {
+                foreach (Option q in correctAnswer)
+                {
+                    if (q.Id == selected)
+                    {
+                        var questionData = _context.Questions.Where(x => x.Id == questionId).FirstOrDefault();
+                        score += questionData.Score;
+                    }
+                }
+                return Ok(score);
+            }
+            return Ok(0);
+        }
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         [Authorize]

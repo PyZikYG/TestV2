@@ -3,8 +3,9 @@
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
-    var testResult = Model.FirstOrDefault().TestResult;
+    TestResult testResult = Model.FirstOrDefault().TestResult;
     var target_date = testResult.StartedOn.AddMinutes(testResult.Test.TimeToPassing);
+    //var userScore = testResult.Answers  .Where(a => a.QuestionId == question.Id);
 }
 <fieldset id="field">
     @if (testResult.Test.TimeToPassing != 0)
@@ -24,10 +25,12 @@
     </div>
 </fieldset>
 <nav class="table-responsive container" aria-label="...">
+    <i>Ваши баллы за текущие ответы: <a id="scoreNow"></a></i>
+    <hr />
     <ul class="pagination">
-        <li class="page-item disabled prev-btn">
+@*         <li class="page-item disabled prev-btn">
             <span class="page-link unselectable">Пред</span>
-        </li>
+        </li> *@
         @foreach (var a in Model)
         {
             <li class="page-item num-btn" btn-order="@a.Order" btn-id="@a.Id" answer-type="@a.AnswerType">
@@ -39,6 +42,16 @@
         </li>
     </ul>
 </nav>
+<hr />
+<i> Режим ставки по баллам</i>
+<form id="inputForm">
+    <div class="form-group">
+        <label for="numberInput">Введите число:</label>
+        <input type="number" class="form-control" id="numberInput" name="numberInput" max=Score required />
+    </div>
+    <button type="button" class="btn btn-primary" id="submitButton">Подтвердить</button>
+</form>
+<hr /><br /><br />
 <button class="btn btn-default" style="margin-left: 15px" data-toggle="modal" onclick='submitAnswer();' data-target="#finishModal">Завершить</button>
 
 <div class="modal fade" id="finishModal">
@@ -67,6 +80,94 @@
     @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
     <script src="~/lib/Sortable/Sortable.js"></script>
     <script type="text/javascript">
+        
+        var scoreTestNow = 0;
+
+        function GetScoreDb() {
+            console.log("got from db:" + parseFloat(localStorage.getItem('scoreTmp')));
+            return parseFloat(localStorage.getItem('scoreTmp'));
+        }
+
+        function SetScoreDb(val) {
+            localStorage.setItem('scoreTmp', val);
+            document.getElementById("numberInput").max = val;
+            console.log("setted: " + val);
+        }
+
+        function getScoreZ(e) {
+            e.preventDefault();
+            const elem = document.getElementById("scoreNow");
+            elem.innerText = GetScoreDb();
+            var checkedId = 0
+            var forms = document.getElementsByClassName("form-check-label unselectable");
+            console.log("start iter");
+            for (let i = 0; i < forms.length; i++) {
+                console.log("iter: " + i);
+                var checkstate = document.getElementsByClassName("form-check-label unselectable")[i].children[0];
+                console.log(checkstate);
+                if (checkstate.checked == true) {
+                    checkedId = checkstate.getAttribute("option-id");
+                    console.log("found checked question with option-id: " + checkedId)
+                }
+            }
+            console.log("stop iter");
+
+            $.ajax({
+                cache: false,
+                method: "GET",
+                url: "/Test/Result/" + window.location.href.split("/")[3] + "/GetScore?questionId=" + (parseInt(window.location.href.split("/")[5]) /* -1 */ ) + "&selected=" + checkedId,
+                dataType: "html",
+                beforeSend: function () {
+
+                },
+                success: function (response) {
+                    console.log("!!!!! " + response);
+                    const elem = document.getElementById("scoreNow");
+                    scoreTestNow += parseFloat(response);
+                    if (document.getElementById("numberInput").readOnly) { //Если ставка принята
+                        if (parseFloat(response) == 0) {
+                            //Если ответ был неправильным
+                            scoreTestNow -= parseFloat(document.getElementById("numberInput").value);
+                            document.getElementById("numberInput").readOnly = false;
+                            if (scoreTestNow < 0){
+                                scoreTestNow = 0;
+                            }
+                        }
+                        else {
+                            //Если ответ правильный
+                            //console.log("Была поставлена ставка, пользователь выиграл и к своим баллам: " + scoreTestNow + " получил ещё " + parseFloat(document.getElementById("numberInput").value));
+                            scoreTestNow += parseFloat(document.getElementById("numberInput").value);
+                            document.getElementById("numberInput").readOnly = false;
+                        }
+                    }
+                    SetScoreDb(scoreTestNow);
+                    elem.innerText = scoreTestNow;
+
+                    if (!(target_date - Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
+                        date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()) > 0 || @testResult.Test.TimeToPassing == 0)) {
+                        switchAnswer(e);
+                    }
+                    else {
+                        submitSwitchAnswer(e);
+                    }
+                    loadAnswer();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseJSON);
+                }
+            });
+        }
+
+            document.getElementById("submitButton").addEventListener("click", function (event) {
+                event.preventDefault();
+                if (document.getElementById("numberInput").value > document.getElementById("numberInput").max) {
+                    alert("Недостаточно баллов для принятия ставки!");
+            }
+                else {
+                document.getElementById("numberInput").readOnly = true;
+            } 
+            });
+
         var date = new Date();
         var firstOrder = $("nav ul").children().filter(".num-btn")[0].getAttribute("btn-order");
         var lastOrder = $("nav ul").children().filter(".num-btn")[$("nav ul").children().filter(".num-btn").length - 1].getAttribute("btn-order");
@@ -88,14 +189,13 @@
         loadAnswer();
 
         $("nav ul").on("click", function (e) {
-            if (!(target_date - Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),
-                            date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()) > 0 || @testResult.Test.TimeToPassing == 0)) {
-                switchAnswer(e);
-            }
-            else {
-                submitSwitchAnswer(e);
-            }
-            loadAnswer();
+
+            console.log("That was a next question event!");
+
+            
+            getScoreZ(e);
+
+            
         });
 
         $(document).keydown(disableArrowKeys);

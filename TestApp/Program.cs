@@ -32,8 +32,8 @@ namespace TestApp
                         services.GetRequiredService<UserManager<User>>(), 
                         services.GetRequiredService<SignInManager<User>>(), 
                         services.GetRequiredService<ILogger<DbInitializer>>());
-                    //dbInit.InitializeNew(); < -- Использовать только при первичном запуске!!!!!!!!!!!!!!!
-                    //dbInit.GetStatsForTest(1,100);
+                        //dbInit.InitializeNew();
+                        //dbInit.GetStatsForTest(1,100);
                 }
                 catch (Exception ex)
                 {
