@@ -31,11 +31,17 @@
 @*         <li class="page-item disabled prev-btn">
             <span class="page-link unselectable">Пред</span>
         </li> *@
+
         @foreach (var a in Model)
         {
             <li class="page-item num-btn" btn-order="@a.Order" btn-id="@a.Id" answer-type="@a.AnswerType">
-                <a class="page-link unselectable">@a.Order</a>
+                <a class="page-link unselectable" style="pointer-events: none;">@a.Order</a>
             </li>
+        }
+
+
+        @{
+            var maxNumber = Model.Max(a => a.Order);
         }
         <li class="page-item next-btn">
             <span class="page-link unselectable">След</span>
@@ -74,7 +80,9 @@
     </div>
 </div>
 <form hidden="hidden" id="finishForm" asp-controller="Test" asp-action="FinishTest"
-      asp-route-testResultId="@Model.First().TestResult.Id"></form>
+      asp-route-testResultId="@Model.First().TestResult.Id">
+</form>
+
 @section Scripts
     {
     @{ await Html.RenderPartialAsync("_CodeScriptsPartial"); }
@@ -125,7 +133,7 @@
                     const elem = document.getElementById("scoreNow");
                     scoreTestNow += parseFloat(response);
                     if (document.getElementById("numberInput").readOnly) { //Если ставка принята
-                        if (parseFloat(response) == 0) {
+                        if (parseFloat(response) == 0) {P
                             //Если ответ был неправильным
                             scoreTestNow -= parseFloat(document.getElementById("numberInput").value);
                             document.getElementById("numberInput").readOnly = false;

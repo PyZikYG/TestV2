@@ -6,6 +6,8 @@ namespace TestApp.Models
     public abstract class Answer
     {
         public int Id { get; set; }
+
+        public int scoreTestNow { get; set; }
         public int QuestionId { get; set; }
 
         [Required] public Question Question { get; set; }

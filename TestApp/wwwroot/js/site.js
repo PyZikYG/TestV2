@@ -210,28 +210,15 @@ function submitAnswer() {
     });
 }
 
-var askedQuestions = [];
-
-function checkQuestion() {
-    var currentQuestion = parseInt(window.location.href.split("/")[5]);
-
-    if (askedQuestions.includes(currentQuestion)) {
-        console.log("лох");
-        return true;
-    } else {
-        askedQuestions.push(currentQuestion);
-        return false;
-    }
-}
 
 function switchAnswer(e) {
+    
     if (e.target.parentElement.classList.contains("next-btn")) {
         if (!e.target.parentElement.classList.contains("disabled")) {
             var tmp = getActiveAnswerOrder() - -1;
             $(".active").removeClass("active");
             $("li[btn-order=" + tmp + "]").addClass("active");
             refreshButtons();
-            checkQuestion();
         }
     } else if (e.target.parentElement.classList.contains("prev-btn")) {
         if (!e.target.parentElement.classList.contains("disabled")) {
@@ -239,13 +226,11 @@ function switchAnswer(e) {
             $(".active").removeClass("active");
             $("li[btn-order=" + tmp + "]").addClass("active");
             refreshButtons();
-            checkQuestion();
         }
     } else if (e.target.parentElement.classList.contains("num-btn")) {
         $(".active").removeClass("active");
         $("li[btn-Order=" + e.target.parentElement.getAttribute("btn-Order") + "]").addClass("active");
         refreshButtons();
-        checkQuestion();
     }
 }
 function submitSwitchAnswer(e) {

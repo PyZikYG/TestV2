@@ -770,7 +770,6 @@ namespace TestApp.Controllers
                 }
                 await _context.SaveChangesAsync();
             }
-                
 
             testResult.RightAnswersCount = count;
             _context.Update(testResult);
