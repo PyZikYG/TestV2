@@ -19,7 +19,7 @@ namespace TestApp.Models
 
         public uint RightAnswersCount { get; set; }
 
-        public uint TotalScore { get; set; }
+        //public uint TotalScore { get; set; }
 
         [Required] public uint TotalQuestions { get; set; }
 

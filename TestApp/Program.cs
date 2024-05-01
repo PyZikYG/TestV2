@@ -32,7 +32,7 @@ namespace TestApp
                         services.GetRequiredService<UserManager<User>>(), 
                         services.GetRequiredService<SignInManager<User>>(), 
                         services.GetRequiredService<ILogger<DbInitializer>>());
-                        //dbInit.InitializeNew();
+                        dbInit.InitializeNew();
                         //dbInit.GetStatsForTest(1,100);
                 }
                 catch (Exception ex)

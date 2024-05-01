@@ -91,6 +91,7 @@ else
                 <th>Создатель</th>
                 <th>Пройден</th>
                 <th>Процент выполнения</th>
+                <th>Баллы</th>
             </tr>
             @foreach (var item in completedTests)
             {
@@ -110,6 +111,9 @@ else
                     <td>
                         @(item.RightAnswersCount * 100 / item.TotalQuestions)%
                     </td>
+                    <td>
+                       @*  @(item.TotalScore) *@
+                    </td> 
                 </tr>
             }
         </table>

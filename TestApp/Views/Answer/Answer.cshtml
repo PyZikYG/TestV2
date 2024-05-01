@@ -1,12 +1,16 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<User> UserManager
 @model ICollection<Answer>
-
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
     TestResult testResult = Model.FirstOrDefault().TestResult;
     var target_date = testResult.StartedOn.AddMinutes(testResult.Test.TimeToPassing);
     //var userScore = testResult.Answers  .Where(a => a.QuestionId == question.Id);
+    var users = await UserManager.Users.ToListAsync();
 }
+
 <fieldset id="field">
     @if (testResult.Test.TimeToPassing != 0)
     {
@@ -35,7 +39,7 @@
         @foreach (var a in Model)
         {
             <li class="page-item num-btn" btn-order="@a.Order" btn-id="@a.Id" answer-type="@a.AnswerType">
-                <a class="page-link unselectable" style="pointer-events: none;">@a.Order</a>
+                <a class="page-link unselectable">@a.Order</a>
             </li>
         }
 
@@ -79,6 +83,31 @@
         </div>
     </div>
 </div>
+<hr />
+<div class="container">
+    <div class="align-content-center">
+        <h1 class="text-center">Баллы пользователей</h1>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Имя пользователя</th>
+                    <th>Баллы</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.UserName</td>
+                        <td><p>0</p></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <form hidden="hidden" id="finishForm" asp-controller="Test" asp-action="FinishTest"
       asp-route-testResultId="@Model.First().TestResult.Id">
 </form>
