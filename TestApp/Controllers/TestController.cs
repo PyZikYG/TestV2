@@ -42,7 +42,7 @@ namespace TestApp.Controllers
             _logger = loggerFactory.CreateLogger<UserController>();
         }
 
-        #endregion
+        #endregion Конструктор
 
         #region Удаление
 
@@ -61,7 +61,7 @@ namespace TestApp.Controllers
             return RedirectToAction("Tests");
         }
 
-        #endregion
+        #endregion Удаление
 
         #region Список тестов
 
@@ -81,7 +81,7 @@ namespace TestApp.Controllers
             return View(addTestModel);
         }
 
-        #endregion
+        #endregion Список тестов
 
         #region Детали
 
@@ -112,7 +112,6 @@ namespace TestApp.Controllers
                     ViewBag.qrCodeBase64 = "";
                 }
 
-
                 return View(test);
             }
 
@@ -125,9 +124,10 @@ namespace TestApp.Controllers
             return View(test);
         }
 
-        #endregion
+        #endregion Детали
 
         #region Поля
+
         public static readonly float EPSILON = 0.0000001F;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
@@ -138,7 +138,7 @@ namespace TestApp.Controllers
         //private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
 
-        #endregion
+        #endregion Поля
 
         #region Добавление
 
@@ -180,7 +180,6 @@ namespace TestApp.Controllers
                     //TotalQuestions = (uint)test.Questions.Count()
                 };
                 user.TestResults.Add(testResult);
-
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details", new { id = test.Id });
@@ -266,7 +265,6 @@ namespace TestApp.Controllers
 
             if (_context.TestResults.Any(t => t.CompletedByUser == user && t.Test == test)) Response.StatusCode = 400;
 
-
             var testResult = new TestResult
             {
                 IsCompleted = false,
@@ -331,7 +329,6 @@ namespace TestApp.Controllers
                 return new JsonResult("Тест уже добавлен");
             }
 
-
             var testResult = new TestResult
             {
                 IsCompleted = false,
@@ -344,6 +341,7 @@ namespace TestApp.Controllers
             Response.StatusCode = 200;
             return new JsonResult("Успешно");
         }
+
         [HttpPost]
         [Authorize]
         [Route("/User/[controller]s/{testResultId}/ReAdd/")]
@@ -362,7 +360,8 @@ namespace TestApp.Controllers
             Response.StatusCode = 200;
             return RedirectToAction("Results", new { id = testResult.Test.Id });
         }
-        #endregion
+
+        #endregion Добавление
 
         #region Включение/Выключение
 
@@ -435,7 +434,8 @@ namespace TestApp.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Tests");
         }
-        #endregion
+
+        #endregion Включение/Выключение
 
         #region Результаты
 
@@ -498,7 +498,7 @@ namespace TestApp.Controllers
             var test = await _context.Tests.SingleOrDefaultAsync(t => t.Id == id);
             if (test.CreatedById != user.Id) Forbid();
             var questions = _context.Questions.Where(q => q.TestId == test.Id && !q.IsDeleted);
-            var stat = new Stat {TestName = test.Name, TestId = test.Id};
+            var stat = new Stat { TestName = test.Name, TestId = test.Id };
             foreach (var question in questions)
             {
                 QuestionStat questionStat = new QuestionStat
@@ -516,25 +516,25 @@ namespace TestApp.Controllers
                     switch (answer.Result)
                     {
                         case null:
-                        {
-                            questionStat.NullCount++;
-                            break;
-                        }
+                            {
+                                questionStat.NullCount++;
+                                break;
+                            }
                         case AnswerResult.Wrong:
-                        {
-                            questionStat.WrongCount++;
-                            break;
-                        }
+                            {
+                                questionStat.WrongCount++;
+                                break;
+                            }
                         case AnswerResult.PartiallyRight:
-                        {
-                            questionStat.PartiallyRightCount++;
-                            break;
-                        }
+                            {
+                                questionStat.PartiallyRightCount++;
+                                break;
+                            }
                         case AnswerResult.Right:
-                        {
-                            questionStat.RightCount++;
-                            break;
-                        }
+                            {
+                                questionStat.RightCount++;
+                                break;
+                            }
                     }
                     n++;
                     averageSum += answer.Score;
@@ -549,12 +549,12 @@ namespace TestApp.Controllers
                 stat.QuestionStats.Add(questionStat);
             }
 
-            stat.MostDifficult = questions.SingleOrDefault(x=>x.Id == stat.GetMostDifficultId());
-            stat.MostEasy = questions.SingleOrDefault(x=>x.Id == stat.GetMostEasyId());
+            stat.MostDifficult = questions.SingleOrDefault(x => x.Id == stat.GetMostDifficultId());
+            stat.MostEasy = questions.SingleOrDefault(x => x.Id == stat.GetMostEasyId());
             return View("Stat", stat);
         }
 
-        #endregion
+        #endregion Результаты
 
         #region Прохождение
 
@@ -631,15 +631,19 @@ namespace TestApp.Controllers
                         case "SingleChoiceQuestion":
                             answer = new SingleChoiceAnswer();
                             break;
+
                         case "MultiChoiceQuestion":
                             answer = new MultiChoiceAnswer();
                             break;
+
                         case "TextQuestion":
                             answer = new TextAnswer();
                             break;
+
                         case "DragAndDropQuestion":
                             answer = new DragAndDropAnswer();
                             break;
+
                         case "CodeQuestion":
                             answer = new CodeAnswer();
                             break;
@@ -671,15 +675,19 @@ namespace TestApp.Controllers
                         case "SingleChoiceQuestion":
                             answer = new SingleChoiceAnswer();
                             break;
+
                         case "MultiChoiceQuestion":
                             answer = new MultiChoiceAnswer();
                             break;
+
                         case "TextQuestion":
                             answer = new TextAnswer();
                             break;
+
                         case "DragAndDropQuestion":
                             answer = new DragAndDropAnswer();
                             break;
+
                         case "CodeQuestion":
                             answer = new CodeAnswer();
                             break;
@@ -708,7 +716,6 @@ namespace TestApp.Controllers
         [HttpGet("/Test/Result/{testResultId}/GetScore/")]
         public async Task<IActionResult> GetScore(int TestResultId, [FromQuery] int questionId, [FromQuery] int selected)
         {
-
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var correctAnswer = _context.Options.Where(x => x.QuestionId.Equals(questionId)).Where(z => z.IsRight.Equals(true));
             float score = 0;
@@ -743,42 +750,44 @@ namespace TestApp.Controllers
             //var questions = testResult.Test.Questions.ToList();
             var answers = _context.Answers.Where(a => a.TestResult == testResult);
             testResult.TotalQuestions = (uint)answers.Count();
+            float _allscores = 0;
             foreach (var answer in answers)
             {
                 var _question = await _context.Questions
                     .SingleOrDefaultAsync(q => q.Id == answer.QuestionId);
-                
+
                 if (answer is SingleChoiceAnswer singleChoiceAnswer)
                 {
-                    GetSingleChoiceResult(singleChoiceAnswer, _question, ref count);
+                    _allscores += GetSingleChoiceResult(singleChoiceAnswer, _question, ref count);
                 }
                 else if (answer is MultiChoiceAnswer multiChoiceAnswer)
                 {
-                    GetMultiChoiceResult(_question, multiChoiceAnswer, ref count);
+                    _allscores += GetMultiChoiceResult(_question, multiChoiceAnswer, ref count);
                 }
                 else if (answer is TextAnswer textAnswer)
                 {
-                    GetTextResult(_question, textAnswer, ref count);
+                    _allscores += GetTextResult(_question, textAnswer, ref count);
                 }
                 else if (answer is DragAndDropAnswer dndAnswer)
                 {
-                    GetDragAndDropResult(_question, dndAnswer, ref count);
+                    _allscores += GetDragAndDropResult(_question, dndAnswer, ref count);
                 }
                 else if (answer is CodeAnswer codeAnswer)
                 {
-                    GedCodeResult(_question, codeAnswer, ref count);
+                    _allscores += GedCodeResult(_question, codeAnswer, ref count);
                 }
                 await _context.SaveChangesAsync();
             }
 
             testResult.RightAnswersCount = count;
+            testResult.TotalScore = _allscores;
             _context.Update(testResult);
             await _context.SaveChangesAsync();
             //throw new NotImplementedException();
             return RedirectToAction("TestResults");
         }
 
-        private void GedCodeResult(Question _question, CodeAnswer codeAnswer, ref uint count)
+        private float GedCodeResult(Question _question, CodeAnswer codeAnswer, ref uint count)
         {
             var question = _question as CodeQuestion;
             //.Include(a => a.Question)
@@ -794,7 +803,7 @@ namespace TestApp.Controllers
             var code = _context.Codes.SingleOrDefault(c => c.Answer == codeAnswer);
             if (code == null)
             {
-                code = (_context.Add(new Code() {Answer = codeAnswer, Value = userCode})).Entity;
+                code = (_context.Add(new Code() { Answer = codeAnswer, Value = userCode })).Entity;
                 codeAnswer.Code = code;
                 _context.Update(codeAnswer);
             }
@@ -823,10 +832,12 @@ namespace TestApp.Controllers
             }
 
             _context.Update(codeAnswer);
+            return codeAnswer.Score;
         }
 
-        private void GetDragAndDropResult(Question _question, DragAndDropAnswer dndAnswer, ref uint count)
+        private float GetDragAndDropResult(Question _question, DragAndDropAnswer dndAnswer, ref uint count)
         {
+            float score = 0;
             var question = _question as DragAndDropQuestion;
             _context.Entry(question).Collection(x => x.Options).Load();
             _context.Entry(dndAnswer).Collection(x => x.DragAndDropAnswerOptions).Load();
@@ -842,10 +853,10 @@ namespace TestApp.Controllers
                 foreach (var dndOption in dndOptions)
                     if (dndOption.RightOptionId != dndOption.OptionId)
                         wrongOrderCount++;
-                var score = question.Score *
-                            (optionsCount - wrongOrderCount) / (float) optionsCount;
+                score = question.Score *
+                           (optionsCount - wrongOrderCount) / (float)optionsCount;
                 dndAnswer.Score = score > 0 ? score : 0;
-            
+
                 if (Math.Abs(dndAnswer.Score - question.Score) < EPSILON)
                 {
                     count++;
@@ -855,11 +866,12 @@ namespace TestApp.Controllers
                 {
                     dndAnswer.Result = score == 0 ? AnswerResult.Wrong : AnswerResult.PartiallyRight;
                 }
-            }  
+            }
             _context.Update(dndAnswer);
+            return score;
         }
 
-        private void GetTextResult(Question _question, TextAnswer textAnswer, ref uint count)
+        private float GetTextResult(Question _question, TextAnswer textAnswer, ref uint count)
         {
             var question = _question as TextQuestion;
             if (!String.IsNullOrEmpty(textAnswer.Text) && !String.IsNullOrEmpty(question.TextRightAnswer))
@@ -883,10 +895,12 @@ namespace TestApp.Controllers
                 textAnswer.Score = 0;
             }
             _context.TextAnswers.Update(textAnswer);
+            return textAnswer.Score;
         }
 
-        private void GetMultiChoiceResult(Question _question, MultiChoiceAnswer multiChoiceAnswer, ref uint count)
+        private float GetMultiChoiceResult(Question _question, MultiChoiceAnswer multiChoiceAnswer, ref uint count)
         {
+            float _allScores = 0;
             var question = _question as MultiChoiceQuestion;
             _context.Entry(question).Collection(x => x.Options).Load();
             _context.Entry(multiChoiceAnswer).Collection(x => x.AnswerOptions).Load();
@@ -907,8 +921,9 @@ namespace TestApp.Controllers
                     if (answerOption.Checked != rightAnswer) countWrong++;
                 }
                 var score = question.Score *
-                            (countChecked - countWrong) / (float) countChecked;
+                            (countChecked - countWrong) / (float)countChecked;
                 multiChoiceAnswer.Score = score;
+                _allScores = score;
                 if (Math.Abs(multiChoiceAnswer.Score - question.Score) < EPSILON)
                 {
                     count++;
@@ -925,12 +940,13 @@ namespace TestApp.Controllers
             }
 
             _context.MultiChoiceAnswers.Update(multiChoiceAnswer);
+            return _allScores;
         }
 
-        private void GetSingleChoiceResult(SingleChoiceAnswer singleChoiceAnswer, Question _question, ref uint count)
+        private float GetSingleChoiceResult(SingleChoiceAnswer singleChoiceAnswer, Question _question, ref uint count)
         {
             _context.Entry(singleChoiceAnswer).Reference(x => x.Option).Load();
-
+            float _allScore = 0;
             var question = _question as SingleChoiceQuestion;
             _context.Entry(question).Reference(x => x.RightAnswer).Load();
             singleChoiceAnswer.Score = 0;
@@ -941,16 +957,19 @@ namespace TestApp.Controllers
                     singleChoiceAnswer.Score = question.Score;
                     count++;
                     singleChoiceAnswer.Result = AnswerResult.Right;
+                    _allScore += singleChoiceAnswer.Score;
                 }
                 else singleChoiceAnswer.Result = AnswerResult.Wrong;
             }
             else singleChoiceAnswer.Result = null;
             _context.SingleChoiceAnswers.Update(singleChoiceAnswer);
+            return _allScore;
         }
 
-        #endregion
+        #endregion Прохождение
 
         #region Вспомогательные методы
+
         private static readonly Random Random = new Random();
 
         public static void Shuffle<T>(List<T> list)
@@ -965,6 +984,7 @@ namespace TestApp.Controllers
                 list[n] = value;
             }
         }
+
         public static void Shuffle<T>(T[] list)
         {
             var n = list.Length;
@@ -1066,6 +1086,6 @@ namespace TestApp.Controllers
             return output.ToString();
         }
 
-        #endregion
+        #endregion Вспомогательные методы
     }
 }

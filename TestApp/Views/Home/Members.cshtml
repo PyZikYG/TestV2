@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @inject UserManager<User> UserManager
+@model ICollection<TestResult>
 
 @{
     ViewData["Title"] = "Список пользователей";
@@ -17,6 +18,7 @@
                     <th>Имя пользователя</th>
                     <th>Email</th>
                     <th>Id</th>
+                    <th>Баллы</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,6 +28,14 @@
                         <td>@user.UserName</td>
                         <td>@user.Email</td>
                         <td>@user.Id</td>
+                        <td>
+                        @foreach (var t in user._context.TestResults.Where(tr => tr.CompletedByUserId == user.Id).Include("Test"))
+                        {
+                                <i>@t.Test.Name - @t.TotalScore</i> <br />
+                        }
+                        </td>
+                        
+                        <td> </td>
                     </tr>
                 }
             </tbody>

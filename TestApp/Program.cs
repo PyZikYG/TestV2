@@ -12,11 +12,12 @@ using Microsoft.Extensions.DependencyInjection;
 using TestApp.Data;
 using TestApp.Models;
 
-
 namespace TestApp
 {
     public class Program
     {
+        public static ApplicationDbContext context = null;
+
         public static void Main(string[] args)
         {
             Console.WriteLine("Initializing DB...");
@@ -26,13 +27,13 @@ namespace TestApp
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    context = services.GetRequiredService<ApplicationDbContext>();
                     DbInitializer dbInit = new DbInitializer(
                         context,
-                        services.GetRequiredService<UserManager<User>>(), 
-                        services.GetRequiredService<SignInManager<User>>(), 
+                        services.GetRequiredService<UserManager<User>>(),
+                        services.GetRequiredService<SignInManager<User>>(),
                         services.GetRequiredService<ILogger<DbInitializer>>());
-                        dbInit.InitializeNew();
+                        //dbInit.InitializeNew();
                         //dbInit.GetStatsForTest(1,100);
                 }
                 catch (Exception ex)
@@ -43,7 +44,6 @@ namespace TestApp
             }
 
             host.Run();
-            
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
@@ -52,7 +52,5 @@ namespace TestApp
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
         }
-            
-
     }
 }

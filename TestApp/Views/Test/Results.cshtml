@@ -33,6 +33,7 @@ else
                 <th>ID</th>
                 <th>Имя</th>
                 <th>Дата</th>
+                <th>Заработанные баллы</th>
                 <th>Результат</th>
                 <th>ID прохождения</th>
             </tr>
@@ -48,6 +49,9 @@ else
                         </td>
                         <td>
                             @item.CompletedOn
+                        </td>
+                        <td>
+                            @item.TotalScore
                         </td>
                         <td>
                             @(item.RightAnswersCount * 100 / item.TotalQuestions)%

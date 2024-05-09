@@ -19,7 +19,7 @@ namespace TestApp.Models
 
         public uint RightAnswersCount { get; set; }
 
-        //public uint TotalScore { get; set; }
+        public float TotalScore { get; set; } = 0;
 
         [Required] public uint TotalQuestions { get; set; }
 
@@ -29,7 +29,7 @@ namespace TestApp.Models
 
         public int TestId { get; set; }
         [Required] public Test Test { get; set; }
-        
+
         [NotMapped]
         public TimeSpan TimeTaken
         {
