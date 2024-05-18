@@ -90,6 +90,20 @@ namespace TestApp.Controllers
             return Forbid();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SubmitAnswer(int scoreNow)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            if (user != null)
+            {
+                user.ScoreNow = scoreNow;
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Index");
+        }
+
+
         #endregion
 
         #region GET

@@ -145,17 +145,17 @@
             document.getElementById("numberInput").max = val;
             console.log("setted: " + val);
             console.log("Setting TempScoreNow to:", val);
-            $.ajax({
-                method: "POST",
-                url: "/Test/UpdateTempScore",
-                data: { scoreNow: val },
-                success: function (response) {
-                    console.log("TempScoreNow updated successfully.");
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.error("Error updating TempScoreNow:", errorThrown);
-                }
-            });
+            // $.ajax({
+            //     method: "POST",
+            //     url: "/Test/UpdateTempScore",
+            //     data: { scoreNow: val },
+            //     success: function (response) {
+            //         console.log("TempScoreNow updated successfully.");
+            //     },
+            //     error: function (xhr, textStatus, errorThrown) {
+            //         console.error("Error updating TempScoreNow:", errorThrown);
+            //     }
+            // });
         }
 
         function getScoreZ(e) {

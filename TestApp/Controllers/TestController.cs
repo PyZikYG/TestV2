@@ -591,20 +591,19 @@ namespace TestApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTempScoreAsync(float scoreNow, int testResultId)
+        public async Task<IActionResult> UpdateScore(int scoreNow)
         {
-            var userId = _userManager.GetUserAsync(HttpContext.User);
-            var testResult = await _context.TestResults.SingleAsync(tr => tr.Id == testResultId);
-
-            if (testResult != null)
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            if (user != null)
             {
-                testResult.TempScoreNow = scoreNow;
-                _context.SaveChanges();
-                return Ok(); 
+                user.ScoreNow = scoreNow;
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
             }
-
-            return NotFound();
+            return Json(new { success = false, message = "User not found" });
         }
+
 
         // POST
         [Authorize]
