@@ -9,7 +9,6 @@ namespace TestApp.Models
         public ApplicationDbContext _context { get; set; }
         public ICollection<TestResult> TestResults { get; set; }
         public ICollection<Test> Tests { get; set; }
-        public int ScoreNow { get; set; }  // Добавляемое свойство
 
         public User() : base()
         {
