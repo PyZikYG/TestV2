@@ -23,6 +23,7 @@ namespace TestApp.Controllers
 {
     public partial class TestController : Controller
     {
+
         #region Конструктор
 
         public TestController(
@@ -587,6 +588,22 @@ namespace TestApp.Controllers
                     ViewBag.QuestionsCount = testResult.Test.Count;
             }
             return View(testResult);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTempScoreAsync(float scoreNow, int testResultId)
+        {
+            var userId = _userManager.GetUserAsync(HttpContext.User);
+            var testResult = await _context.TestResults.SingleAsync(tr => tr.Id == testResultId);
+
+            if (testResult != null)
+            {
+                testResult.TempScoreNow = scoreNow;
+                _context.SaveChanges();
+                return Ok(); 
+            }
+
+            return NotFound();
         }
 
         // POST

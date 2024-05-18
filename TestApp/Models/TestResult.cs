@@ -21,6 +21,8 @@ namespace TestApp.Models
 
         public float TotalScore { get; set; } = 0;
 
+        public float TempScoreNow { get; set; } = 0;
+
         [Required] public uint TotalQuestions { get; set; }
 
         public int CompletedByUserId { get; set; }

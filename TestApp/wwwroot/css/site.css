@@ -63,7 +63,7 @@ body {
     }
 
  .item-table {
-    /*
+    
     position: relative;
     padding: 1em;
     border: 1px solid #DDD;
@@ -72,7 +72,7 @@ body {
     table-layout: auto;
     width: 100%;
     border-bottom: 1px solid #DDD;
-    margin-bottom: 0;*/
+    margin-bottom: 0;
     width: 100%;
  }
 /*

@@ -84,6 +84,13 @@
     </div>
 </div>
 <hr />
+@{
+    var currentUser = UserManager.GetUserAsync(User).Result;
+    var usersWithOngoingTests = UserManager.Users
+    .Where(u => u.TestResults.Any(tr => !tr.IsCompleted))
+    .ToList();
+}
+
 <div class="container">
     <div class="align-content-center">
         <h1 class="text-center">Баллы пользователей</h1>
@@ -96,16 +103,22 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in users)
+                @foreach (var user in usersWithOngoingTests)
                 {
+                    var userTestResult = user.TestResults.FirstOrDefault(tr => !tr.IsCompleted);
+
                     <tr>
                         <td>@user.UserName</td>
-                        <td><i>0</i></td>
-                        <td><p></p></td>
+                        <td><i>@(userTestResult != null ? userTestResult.TempScoreNow.ToString() : "Нет данных")</i></td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        @if (!usersWithOngoingTests.Any())
+        {
+            <p>Нет пользователей с текущими тестами или результаты не доступны.</p>
+        }
     </div>
 </div>
 
@@ -121,6 +134,7 @@
         
         var scoreTestNow = 0;
 
+
         function GetScoreDb() {
             console.log("got from db:" + parseFloat(localStorage.getItem('scoreTmp')));
             return parseFloat(localStorage.getItem('scoreTmp'));
@@ -130,6 +144,18 @@
             localStorage.setItem('scoreTmp', val);
             document.getElementById("numberInput").max = val;
             console.log("setted: " + val);
+            console.log("Setting TempScoreNow to:", val);
+            $.ajax({
+                method: "POST",
+                url: "/Test/UpdateTempScore",
+                data: { scoreNow: val },
+                success: function (response) {
+                    console.log("TempScoreNow updated successfully.");
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error updating TempScoreNow:", errorThrown);
+                }
+            });
         }
 
         function getScoreZ(e) {
@@ -170,12 +196,14 @@
                             if (scoreTestNow < 0){
                                 scoreTestNow = 0;
                             }
+                            SetScoreDb(scoreTestNow);
                         }
                         else {
                             //Если ответ правильный
                             //console.log("Была поставлена ставка, пользователь выиграл и к своим баллам: " + scoreTestNow + " получил ещё " + parseFloat(document.getElementById("numberInput").value));
                             scoreTestNow += parseFloat(document.getElementById("numberInput").value);
                             document.getElementById("numberInput").readOnly = false;
+                            SetScoreDb(scoreTestNow);
                         }
                     }
                     SetScoreDb(scoreTestNow);
